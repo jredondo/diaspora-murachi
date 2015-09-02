@@ -11,6 +11,8 @@ class Post < ActiveRecord::Base
   include Diaspora::Commentable
   include Diaspora::Shareable
 
+  signobject :signable
+
   has_many :participations, dependent: :delete_all, as: :target, inverse_of: :target
 
   attr_accessor :user_like

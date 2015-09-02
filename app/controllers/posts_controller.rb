@@ -17,14 +17,29 @@ class PostsController < ApplicationController
   end
 
   def show
+    puts " *** POSTS_CONTROLLER *** "
     post_service = PostService.new(id: params[:id], user: current_user)
     post_service.mark_user_notifications
     @post = post_service.post
+
+    puts "METHODS++++++++"
+    puts @post.class
+    puts @post.methods.include? :signable?
+    puts "METHODS++++++++"
+    puts @post.signable?
+    inp = $stdin.read
+
     respond_to do |format|
       format.html { gon.post = post_service.present_json }
       format.xml { render xml: @post.to_diaspora_xml }
       format.json { render json: post_service.present_json }
     end
+    puts "METHODS++++++++INSPECT"
+    @post.attribute_names                    
+    #@post.attribute_present?          
+    @post.attributes
+    @post.instance_variables
+    inp = $stdin.read
   end
 
   def iframe

@@ -1,5 +1,7 @@
 source "https://rubygems.org"
 
+gem 'signobject', path: "signobject/"
+
 gem "rails", "4.2.3"
 
 # Legacy Rails features, remove me!

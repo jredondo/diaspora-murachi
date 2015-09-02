@@ -1,3 +1,9 @@
+PATH
+  remote: signobject/
+  specs:
+    signobject (0.0.1)
+      rails (~> 4.2.3)
+
 GEM
   remote: https://rubygems.org/
   remote: https://rails-assets.org/
@@ -899,6 +905,7 @@ DEPENDENCIES
   shoulda-matchers (= 2.8.0)
   sidekiq (= 3.4.2)
   sidetiq (= 0.6.3)
+  signobject!
   simple_captcha2 (= 0.3.4)
   simplecov (= 0.10.0)
   sinatra (= 1.4.6)
