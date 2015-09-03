@@ -12,6 +12,8 @@ class Comment < ActiveRecord::Base
   include Diaspora::Taggable
   include Diaspora::Likeable
 
+  include Signable
+
   acts_as_taggable_on :tags
   extract_tags_from :text
   before_create :build_tags

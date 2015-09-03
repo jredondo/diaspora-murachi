@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150902192626) do
+ActiveRecord::Schema.define(version: 20150902161225) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -478,21 +478,15 @@ ActiveRecord::Schema.define(version: 20150902192626) do
   add_index "share_visibilities", ["shareable_id", "shareable_type", "hidden", "contact_id"], name: "shareable_and_hidden_and_contact_id", using: :btree
   add_index "share_visibilities", ["shareable_id"], name: "index_post_visibilities_on_post_id", using: :btree
 
-  create_table "signings", force: :cascade do |t|
-    t.integer  "post_id"
-    t.integer  "sign_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  add_index "signings", ["post_id"], name: "index_signings_on_post_id", using: :btree
-  add_index "signings", ["sign_id"], name: "index_signings_on_sign_id", using: :btree
-
   create_table "signs", force: :cascade do |t|
     t.string   "body"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.integer  "signable_id"
+    t.string   "signable_type"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
   end
+
+  add_index "signs", ["signable_type", "signable_id"], name: "index_signs_on_signable_type_and_signable_id", using: :btree
 
   create_table "simple_captcha_data", force: :cascade do |t|
     t.string   "key",        limit: 40

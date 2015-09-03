@@ -12,18 +12,16 @@ module Signable
   extend ActiveSupport::Concern
 
   included do
-    #has_many :signings, as: :signable, dependent: :destroy
-    has_many :signings, dependent: :destroy
-    has_many :signs, through: :signings 
+    has_many :signs, as: :signable, dependent: :destroy
   end
 
   def add_sign
-    puts "ADD SIGN"
     signs << Sign.create!(body: 'FIRMA:'+self.text)
   end 
 
   def retrieve_signs
-    puts "RETRIEVE BODY"
+    puts "SIGNABLE"
+    puts signs.first.signable
     signs.all.each do |s|
       puts "s.body",s.body
     end

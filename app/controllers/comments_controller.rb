@@ -14,6 +14,17 @@ class CommentsController < ApplicationController
   def create
     @comment = CommentService.new(post_id: params[:post_id], text: params[:text], user: current_user).create_comment
     if @comment
+      puts "METHODS++++++++"
+      puts @comment.class
+      puts @comment.methods.include? :signable?
+      puts "METHODS++++++++SIGNABLE"
+      puts @comment.signable?
+      puts "METHODS++++++++ADD_SIGN"
+      puts @comment.add_sign
+      puts "METHODS++++++++RETRIEVE_SIGNS"
+      puts @comment.retrieve_signs
+      inp = $stdin.read
+
       respond_create_success
     else
       render nothing: true, status: 404
