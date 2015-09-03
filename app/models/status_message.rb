@@ -7,6 +7,7 @@ class StatusMessage < Post
 
   include PeopleHelper
 
+
   acts_as_taggable_on :tags
   extract_tags_from :raw_message
 

@@ -25,8 +25,12 @@ class PostsController < ApplicationController
     puts "METHODS++++++++"
     puts @post.class
     puts @post.methods.include? :signable?
-    puts "METHODS++++++++"
+    puts "METHODS++++++++SIGNABLE"
     puts @post.signable?
+    puts "METHODS++++++++ADD_SIGN"
+    puts @post.add_sign
+    puts "METHODS++++++++RETRIEVE_SIGNS"
+    puts @post.retrieve_signs
     inp = $stdin.read
 
     respond_to do |format|
@@ -34,12 +38,6 @@ class PostsController < ApplicationController
       format.xml { render xml: @post.to_diaspora_xml }
       format.json { render json: post_service.present_json }
     end
-    puts "METHODS++++++++INSPECT"
-    @post.attribute_names                    
-    #@post.attribute_present?          
-    @post.attributes
-    @post.instance_variables
-    inp = $stdin.read
   end
 
   def iframe

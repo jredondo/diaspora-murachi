@@ -6,5 +6,5 @@ class Sign < ActiveRecord::Base
   has_one :signings
   has_one :posts, :through => :signings
 
-  attr_accessor :body 
+  #attr_accessor :body 
 end

@@ -18,11 +18,15 @@ module Signable
   end
 
   def add_sign
-    signs << Sign.new(body: "FIRMA:"+self.text)
+    puts "ADD SIGN"
+    signs << Sign.create!(body: 'FIRMA:'+self.text)
   end 
 
   def retrieve_signs
-    puts signs
+    puts "RETRIEVE BODY"
+    signs.all.each do |s|
+      puts "s.body",s.body
+    end
   end 
 
   def signable?
