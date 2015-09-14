@@ -11,6 +11,12 @@
 //= require ./publisher/uploader_view
 //= require jquery-textchange
 
+///////////////////////////////////////////
+//= require murachi/hwcrypto.js
+//= require murachi/hwcrypto-legacy.js
+//= require murachi/hex2base.js
+///////////////////////////////////////////
+
 app.views.Publisher = Backbone.View.extend({
 
   el : "#publisher",
@@ -157,6 +163,7 @@ app.views.Publisher = Backbone.View.extend({
   },
 
   createStatusMessage : function(evt) {
+    console.log('createStatusMessage');
     this.setButtonsEnabled(false);
     var self = this;
 
@@ -180,46 +187,82 @@ app.views.Publisher = Backbone.View.extend({
       app.publisher.trigger("publisher:add");
     }
 
-    statusMessage.save({
-      "status_message" : {
-        "text" : serializedForm["status_message[text]"]
-      },
-      "aspect_ids" : serializedForm["aspect_ids[]"],
-      "photos" : serializedForm["photos[]"],
-      "services" : serializedForm["services[]"],
-      "location_address" : $("#location_address").val(),
-      "location_coords" : serializedForm["location[coords]"],
-      "poll_question" : serializedForm["poll_question"],
-      "poll_answers" : serializedForm["poll_answers[]"]
-    }, {
-      url : "/status_messages",
-      success : function() {
-        if( app.publisher ) {
-          app.publisher.$el.trigger("ajax:success");
-          app.publisher.trigger("publisher:sync");
-          self.viewPollCreator.trigger("publisher:sync");
-        }
+    var cert;
+    console.log("getCertificate");
+    hwcrypto.getCertificate({lang: "en"}).then(function(response) {
+    console.log("getCertificate ENTRO");
+      var cert = response;
+      console.log("Using certificate:\n" + cert.hex);
+      statusMessage.save({
+          "status_message" : {
+          "text" : serializedForm["status_message[text]"],
+          "certificate" : cert.hex 
+          },
+          "aspect_ids" : serializedForm["aspect_ids[]"],
+          "photos" : serializedForm["photos[]"],
+          "services" : serializedForm["services[]"],
+          "location_address" : $("#location_address").val(),
+          "location_coords" : serializedForm["location[coords]"],
+          "poll_question" : serializedForm["poll_question"],
+          "poll_answers" : serializedForm["poll_answers[]"]
+        }, {
+        url : "/status_messages",
+        success : function() {
+          // Murachí
+          var presign = statusMessage.presign()
+          console.log("MURACHI MURACHI")
+          console.log("signs1",statusMessage.containerId());
+          console.log("signs1",JSON.stringify(statusMessage.presign()));
+          console.log("cert",response);
+          var hashtype = "SHA-256";
+          var lang = "eng";
+          hwcrypto.sign(cert, 
+                        {type: hashtype, hex: presign}, 
+                        {lang: lang})
+                  .then(function(signature) {
+                    statusMessage.setSign(signature.hex);
+                    console.log("signature");
+                    console.log(JSON.stringify(signature));
+                    statusMessage.save({}, 
+                             {
+                                success : function(model,res)
+                                {       
+                                   cId = JSON.stringify(res.status_message.container_id);
+                                   sg = JSON.stringify(res.status_message.presign)
+                                   alert("Firma exitosa:\n"+"Contenedor BDOC:"+cId);
+                                },
+                                error : function() {
+                                   alert("ERROR");
+                                }
+                              });
+                  }).catch(function(error){alert("SIGN CATCH\n"+error)});
+          if( app.publisher ) {
+            app.publisher.$el.trigger("ajax:success");
+            app.publisher.trigger("publisher:sync");
+            self.viewPollCreator.trigger("publisher:sync");
+          }
 
-        if(app.stream && !self.standalone){
-          app.stream.addNow(statusMessage.toJSON());
-        }
+          if(app.stream && !self.standalone){
+            app.stream.addNow(statusMessage.toJSON());
+          }
 
-        // clear state
-        self.clear();
+          // clear state
+          self.clear();
 
-        // standalone means single-shot posting (until further notice)
-        if( self.standalone ) self.setEnabled(false);
-      },
-      error: function(model, resp) {
-        if( app.publisher ) {
-          app.publisher.trigger("publisher:error");
+          // standalone means single-shot posting (until further notice)
+          if( self.standalone ) self.setEnabled(false);
+        },
+        error: function(model, resp) {
+          if( app.publisher ) {
+            app.publisher.trigger("publisher:error");
+          }
+          self.setInputEnabled(true);
+          Diaspora.page.flashMessages.render({ "success":false, "notice":resp.responseText });
+          self.setButtonsEnabled(true);
+          self.setInputEnabled(true);
         }
-        self.setInputEnabled(true);
-        Diaspora.page.flashMessages.render({ "success":false, "notice":resp.responseText });
-        self.setButtonsEnabled(true);
-        self.setInputEnabled(true);
-      }
-    });
+      });
+    }).catch(function(error){alert("CATCH SAVE\n"+error);}); /*then*/
   },
 
   // creates the location

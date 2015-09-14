@@ -8,6 +8,7 @@ class StatusMessageCreationService
     status_message_initial = user.build_post(:status_message, params[:status_message])
     @status_message = add_attachments(params, status_message_initial)
     @status_message.save
+
     process_status_message(user)
   end
 

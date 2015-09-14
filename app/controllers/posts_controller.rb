@@ -4,6 +4,7 @@
 
 class PostsController < ApplicationController
   include PostsHelper
+  include Signable::Controllers
 
   before_action :authenticate_user!, only: :destroy
   before_action :set_format_if_malformed_from_status_net, only: :show
@@ -21,17 +22,6 @@ class PostsController < ApplicationController
     post_service = PostService.new(id: params[:id], user: current_user)
     post_service.mark_user_notifications
     @post = post_service.post
-
-    puts "METHODS++++++++"
-    puts @post.class
-    puts @post.methods.include? :signable?
-    puts "METHODS++++++++SIGNABLE"
-    puts @post.signable?
-    puts "METHODS++++++++ADD_SIGN"
-    puts @post.add_sign
-    puts "METHODS++++++++RETRIEVE_SIGNS"
-    puts @post.retrieve_signs
-    inp = $stdin.read
 
     respond_to do |format|
       format.html { gon.post = post_service.present_json }

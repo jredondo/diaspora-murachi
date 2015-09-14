@@ -16,7 +16,7 @@ class PostPresenter < BasePresenter
   private
 
   def directly_retrieved_attributes
-    %i(id guid public created_at interacted_at provider_display_name image_url object_url)
+    %i(id guid public created_at interacted_at provider_display_name image_url object_url container_id )
   end
 
   def non_directly_retrieved_attributes
@@ -35,7 +35,8 @@ class PostPresenter < BasePresenter
       poll:                         @post.poll,
       already_participated_in_poll: already_participated_in_poll,
       participation:                participate?,
-      interactions:                 build_interactions_json
+      interactions:                 build_interactions_json,
+      presign:                      @post.presign
     }
   end
 

@@ -47,7 +47,28 @@ class StatusMessagesController < ApplicationController
   end
 
   def create
+    puts "STATUS MESSAGE CONTAINER ID"
     @status_message = StatusMessageCreationService.new(params, current_user).status_message
+    begin 
+      # Construye contenedor
+      @status_message.build_and_set_container!
+      puts "STATUS MESSAGE CONTAINER ID"
+      puts @status_message.container_id
+      # Prepara la firma
+      @status_message.presign!
+      logger.info "\n\n\n\n\n###########################"
+    rescue Exception => e 
+      puts "EXCEPTION ****************"
+      puts e.message
+      puts e.backtrace.join("\n")
+      raise e
+    rescue e 
+      puts "StandardError ****************"
+      puts e.message
+      puts e.backtrace.join("\n")
+      raise e
+    end 
+
     handle_mention_feedback
     respond_to do |format|
       format.html { redirect_to :back }
@@ -57,6 +78,7 @@ class StatusMessagesController < ApplicationController
   rescue StandardError => error
     handle_create_error(error)
   end
+
 
   private
 

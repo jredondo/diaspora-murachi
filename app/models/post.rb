@@ -11,7 +11,7 @@ class Post < ActiveRecord::Base
   include Diaspora::Commentable
   include Diaspora::Shareable
 
-  include Signable
+  include Signable::Models
 
   has_many :participations, dependent: :delete_all, as: :target, inverse_of: :target
 
@@ -126,6 +126,9 @@ class Post < ActiveRecord::Base
 
   def self.diaspora_initialize(params)
     new_post = self.new params.to_hash.stringify_keys.slice(*self.column_names)
+    #logger.info "DIASPORA_INITIALIZE" 
+    #logger.info "#{params[:certificate]}"
+    new_post.certificate = params[:certificate]
     new_post.author = params[:author]
     new_post.public = params[:public] if params[:public]
     new_post.pending = params[:pending] if params[:pending]

@@ -12,7 +12,7 @@ class Comment < ActiveRecord::Base
   include Diaspora::Taggable
   include Diaspora::Likeable
 
-  include Signable
+  include Signable::Models
 
   acts_as_taggable_on :tags
   extract_tags_from :text

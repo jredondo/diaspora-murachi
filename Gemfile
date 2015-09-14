@@ -1,5 +1,12 @@
 source "https://rubygems.org"
 
+#######################
+# Murachi
+gem 'multipart-post'
+#gem 'openssl'
+#gem 'https'
+#######################
+
 gem "rails", "4.2.3"
 
 # Legacy Rails features, remove me!
@@ -255,6 +262,7 @@ group :development do
 
   # test coverage
   gem "simplecov", "0.10.0", require: false
+
 end
 
 group :test do

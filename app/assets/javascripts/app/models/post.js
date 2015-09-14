@@ -8,6 +8,21 @@ app.models.Post = Backbone.Model.extend(_.extend({}, app.models.formatDateMixin,
     this.delegateToInteractions();
   },
 
+  /////////////////////////////////////////////
+  // Murachí
+  /////////////////////////////////////////////
+  containerId :  function(){
+    return this.get("container_id");
+  },
+  presign : function(){
+    return this.get("presign");
+  },
+  setSign : function(sign){
+    return this.set({presign: sign});
+  },
+  /////////////////////////////////////////////
+  /////////////////////////////////////////////
+
   delegateToInteractions : function(){
     this.comments = this.interactions.comments;
     this.likes = this.interactions.likes;
