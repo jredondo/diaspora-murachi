@@ -190,7 +190,7 @@ app.views.Publisher = Backbone.View.extend({
     var cert;
     console.log("getCertificate");
     hwcrypto.getCertificate({lang: "en"}).then(function(response) {
-    console.log("getCertificate ENTRO");
+      console.log("getCertificate ENTRO");
       var cert = response;
       console.log("Using certificate:\n" + cert.hex);
       statusMessage.save({
@@ -235,7 +235,7 @@ app.views.Publisher = Backbone.View.extend({
                                    alert("ERROR");
                                 }
                               });
-                  }).catch(function(error){alert("SIGN CATCH\n"+error)});
+                  }).catch(function(error){alert("ALERTA:\n"+error+"\nLa publicación NO fue firmada")});
           if( app.publisher ) {
             app.publisher.$el.trigger("ajax:success");
             app.publisher.trigger("publisher:sync");
@@ -262,7 +262,16 @@ app.views.Publisher = Backbone.View.extend({
           self.setInputEnabled(true);
         }
       });
-    }).catch(function(error){alert("CATCH SAVE\n"+error);}); /*then*/
+    }).catch(function(error){/*hwcrypto.getCertificate(...)*/
+       if( app.publisher ) {
+          app.publisher.trigger("publisher:error");
+       }
+       self.setInputEnabled(true);
+       //Diaspora.page.flashMessages.render({ "success":false, "notice":resp.responseText });
+       self.setButtonsEnabled(true);
+       self.setInputEnabled(true); 
+       alert("Error obteniendo certificado:\n"+error);
+    }); 
   },
 
   // creates the location

@@ -17,6 +17,9 @@ app.models.Post = Backbone.Model.extend(_.extend({}, app.models.formatDateMixin,
   presign : function(){
     return this.get("presign");
   },
+  verify : function(){
+    return this.get("verify");
+  },
   setSign : function(sign){
     return this.set({presign: sign});
   },

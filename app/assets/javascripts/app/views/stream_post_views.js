@@ -16,6 +16,7 @@ app.views.StreamPost = app.views.Post.extend({
   },
 
   events: {
+    "click .sign": "getSignData",
     "click .focus_comment_textarea": "focusCommentTextarea",
     "click .show_nsfw_post": "removeNsfwShield",
     "click .toggle_nsfw_state": "toggleNsfwState",
@@ -43,6 +44,11 @@ app.views.StreamPost = app.views.Post.extend({
     this.pollView = new app.views.Poll({model : this.model});
   },
 
+  getSignData: function() {
+    this.model.fetch().then(function(response){    
+      alert("Datos de Firmas:\n" + response.verify);
+    });
+  },
 
   likesInfoView : function(){
     return new app.views.LikesInfo({model : this.model});

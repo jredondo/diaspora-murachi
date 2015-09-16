@@ -36,7 +36,8 @@ class PostPresenter < BasePresenter
       already_participated_in_poll: already_participated_in_poll,
       participation:                participate?,
       interactions:                 build_interactions_json,
-      presign:                      @post.presign
+      presign:                      @post.presign,
+      verify:                       @post.verify
     }
   end
 

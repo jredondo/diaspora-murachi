@@ -35,6 +35,36 @@ module Signable
       has_many :signs, as: :signable, dependent: :destroy
     end
 
+    def verify!
+      begin
+        logger.info "=!=!=!=!=!=!=!=!=!=!=!=!=!"
+        @bdoc_text = get_text_from_container!
+        logger.info @bdoc_text
+        logger.info text
+        if @bdoc_text != text
+          logger.info "ALERTA: Los datos firmados no coinciden\n con los almacenados en la base de datos"
+          update!(verify: "ALERTA: Los datos firmados no coinciden\n con los almacenados en la base de datos")
+          return
+        end
+        logger.info "=@#=@#=@#=@#=@#=@#=@#=@#=@#"
+        @uri = URI.parse 'https://murachi.cenditel.gob.ve/Murachi/0.1/archivos/%s' % container_id
+        @req = Net::HTTP::Get.new @uri.path
+        @http = self.config_request(@uri)
+        @req['Authorization'] = 'Basic YWRtaW46YWRtaW4='
+        @res = @http.request(@req)
+        logger.info "=·=·=·=·=·=·=·=·=·"
+        logger.info JSON.parse(@res.body)['signatures']
+        update!(verify: JSON.parse(@res.body)['signatures'])
+        if verify == nil 
+          update!(verify: "ALERTA: La publicación NO fue firmada")
+        end
+      rescue Exception => e
+        raise e
+      rescue e
+        raise e
+      end
+    end
+
     def postsign!
       begin
         @parameters = {"containerId" => container_id,
@@ -46,6 +76,7 @@ module Signable
         @http = self.config_request(@uri)
         @res = @http.post(@uri.path,@parameters.to_json,@headers)
         signs << Sign.create!(body: presign)
+        return
       rescue Exception => e
         raise e
       rescue e
@@ -92,11 +123,10 @@ module Signable
 
     def build_and_set_container!
       begin
-        @text = text 
         #@uri = URI.parse('https://192.168.12.125:8443/Murachi/0.1/archivos/bdocs/cargas')
         @uri = URI.parse('https://murachi.cenditel.gob.ve/Murachi/0.1/archivos/bdocs/cargas')
         @req = Net::HTTP::Post::Multipart.new @uri.path,
-          "data" => UploadIO.new(StringIO.new(@text), "text/plain",@text)
+          "data" => UploadIO.new(StringIO.new(text), "text/plain","diaspora_post_"+guid)
         @req['Authorization'] = 'Basic YWRtaW46YWRtaW4='
         @http = self.config_request(@uri)
         @res = @http.request(@req)
@@ -106,6 +136,19 @@ module Signable
         raise e
       end
       
+    end 
+
+    def get_text_from_container!
+      begin
+        @uri = URI.parse "https://murachi.cenditel.gob.ve/Murachi/0.1/archivos/bdocs/archivos/%s/0" % container_id
+        @req = Net::HTTP::Get.new @uri.path
+        @http = self.config_request(@uri)
+        @req['Authorization'] = 'Basic YWRtaW46YWRtaW4='
+        @res = @http.request(@req)
+        @res.body
+      rescue Exception => e
+        raise e
+      end
     end 
 
     def config_request(uri)

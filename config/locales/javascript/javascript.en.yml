@@ -173,6 +173,7 @@ en:
       mark_unread: "Mark unread"
 
     stream:
+      sign: "Datos de Firma"
       hide: "Hide"
       public: "Public"
       limited: "Limited"

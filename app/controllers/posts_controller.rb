@@ -22,6 +22,7 @@ class PostsController < ApplicationController
     post_service = PostService.new(id: params[:id], user: current_user)
     post_service.mark_user_notifications
     @post = post_service.post
+    @post.verify!
 
     respond_to do |format|
       format.html { gon.post = post_service.present_json }
